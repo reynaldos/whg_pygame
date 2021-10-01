@@ -3,9 +3,21 @@ import pygame
 RED = (255,0,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
+WHITE = (255, 255, 255)
+PURPLE_BG = (183,175,250)
+
+PLAYER_WIDTH = 10
+PLAYER_VEL = 5
+
+ENEMY_WIDTH = 5
+ENEMY_VEL = 15
+
+pygame.init()
+FONT = pygame.font.Font('freesansbold.ttf', 32)
+
 
 # checkpoint class
-class CheckPoint:
+class CheckPoint(pygame.Rect):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -18,13 +30,13 @@ class CheckPoint:
 
 
 # player class
-class Player:
-    def __init__(self, x, y, width, height, vel=5, deaths = 0):
+class Player(pygame.Rect):
+    def __init__(self, x, y, deaths = 0):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
-        self.vel = vel
+        self.width = PLAYER_WIDTH
+        self.height = PLAYER_WIDTH
+        self.vel = PLAYER_VEL
         self.color = RED
         self.deaths = deaths
 
@@ -41,29 +53,29 @@ class Player:
 
     # outline and shape get drawn to screen
     def draw(self, screen):
-        pygame.draw.rect(screen, (0,0,0), (self.x-2, self.y-2, self.width+4, self.height+4))
+        self.mask = pygame.draw.rect(screen, (0,0,0), (self.x-2, self.y-2, self.width+4, self.height+4))
         return pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
 
     # player gets reset at lastCP
     def reset(self, CP: CheckPoint):
-        self.x = CP.x
-        self.y = CP.y
+        self.x = (CP.x + CP.width/2) - self.width/2
+        self.y = (CP.y + CP.height/2) - self.height/2
 
 
 # enemy class
-class Enemy:
-    def __init__(self, x, y, width, height, vel=5, right = True):
+class Enemy():
+    def __init__(self, x, y, right = True):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
-        self.vel = vel
+        self.width = ENEMY_WIDTH
+        self.height = ENEMY_WIDTH
+        self.vel = ENEMY_VEL
         self.color = BLUE
         self.right = right
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (0,0,0), (self.x, self.y), self.width+2, self.height+2)
+        self.mask = pygame.draw.circle(screen, (0,0,0), (self.x, self.y), self.width+2, self.height+2)
         return pygame.draw.circle(screen, self.color, (self.x, self.y), self.width, self.height)
 
     # back and forth movement
@@ -74,3 +86,58 @@ class Enemy:
             self.x += self.vel
         else:
             self.x -= self.vel
+
+
+# level class
+class Level:
+    def __init__(self, x, y, lvlImg, cpList, coinList, enemyList, player):
+        self.x = x
+        self.y = y
+        self.lvlImg = lvlImg
+        self.checkPoints = cpList
+        self.startCP = cpList[0] # start cp is first cp in cpList
+        self.endCP = cpList[len(cpList)-1] # end cp is last cp in cpList
+        self.coinList = coinList
+        self.enemyList = enemyList
+        self.player = player
+        
+
+    # draws level on screen
+    def draw(self, screen):
+        screen.fill(PURPLE_BG)
+        screen.blit(self.lvlImg, (self.x, self.y))
+
+        for cp in self.checkPoints:
+            cp.draw(screen)
+
+        for enemy in self.enemyList:
+            enemy.draw(screen)
+
+        self.player.draw(screen)
+
+        deathCounter = FONT.render("Deaths: " + str(self.player.deaths), True, WHITE)
+        screen.blit(deathCounter, (300,50))
+    
+        pygame.display.update()
+
+
+
+    # level game logic
+    def update(self,keys):
+        self.player.move(keys)
+
+        if self.player.mask.colliderect(self.endCP):
+            print("Finished")
+
+        for enemy in self.enemyList:
+            enemy.move(250,500)
+
+            if enemy.mask.collidelist([self.player.mask]) != -1:
+                self.player.reset(self.startCP)  # better respawn logic needed
+                self.player.deaths += 1
+     
+        
+        # fail_sound.play()
+            
+
+        
