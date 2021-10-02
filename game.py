@@ -16,21 +16,26 @@ FPS = 25
 
 # lvl1 img
 lvl1_img = pygame.image.load(os.path.join('assets', 'level1.png'))
-lvl1_img = pygame.transform.scale(lvl1_img, (550,290))
+lvl1_img = pygame.transform.scale(lvl1_img, (600,250))
 
 # lvl1 player
-lvl1_player = Player(150, 390)
+lvl1_player = Player()
 
 # lvl1 enemies
 lvl1_e1 = Enemy(250, 200)
 lvl1_e2 = Enemy(250, 250)
-lvl1_e3 = Enemy(500, 250)
-lvl1_e4 = Enemy(500, 300)
-lvl1_eList = [lvl1_e1, lvl1_e2, lvl1_e3, lvl1_e4]
+lvl1_e3 = Enemy(550, 225)
+lvl1_e4 = Enemy(550, 275)
+
+lvl1_e5 = Enemy(250, 300)
+lvl1_e6 = Enemy(250, 350)
+lvl1_e7 = Enemy(550, 325)
+lvl1_e8 = Enemy(550, 375)
+lvl1_eList = [lvl1_e1, lvl1_e2, lvl1_e3, lvl1_e4,lvl1_e5,lvl1_e6,lvl1_e7, lvl1_e8]
 
 # lvl1 checkpoints
-lvl1_cp1 = CheckPoint(113,359,100,70)
-lvl1_cp2 = CheckPoint(540,160,100,70)
+lvl1_cp1 = CheckPoint(113,335,110,55)
+lvl1_cp2 = CheckPoint(580,160,110,55)
 lvl1_cpList = [lvl1_cp1, lvl1_cp2]
 
 # lvl1 build
@@ -50,8 +55,6 @@ while running:
 
     lvl1.draw(SCREEN)
     lvl1.update(keys_pressed)
-    
-
 
 pygame.quit()
 
